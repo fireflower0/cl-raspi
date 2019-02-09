@@ -1,7 +1,10 @@
 (defpackage :cl-raspi/lib-wiring-pi
   (:use :cl
         :cffi)
-  (:export ))
+  (:export :wiringpi-setup-gpio
+           :pin-mode
+           :digital-write
+           :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
 (define-foreign-library lib-wiring-pi

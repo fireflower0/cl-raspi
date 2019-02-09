@@ -13,4 +13,5 @@
     :license "MIT"
     :depends-on ("cffi")
     :pathname "examples"
+    :serial t
     :components ((:file "00-blink")))
