@@ -7,7 +7,7 @@
            :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
-(define-foreign-library lib-wiring-pi
+(define-foreign-library libwiringPi
     (:unix "libwiringPi.so"))
 
 (use-foreign-library libwiringPi)
