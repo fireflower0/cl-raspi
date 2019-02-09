@@ -8,7 +8,9 @@
 (in-package :cl-raspi/lib-wiring-pi)
 
 (define-foreign-library lib-wiring-pi
-  (:unix "libwiringPi.so"))
+    (:unix "libwiringPi.so"))
+
+(use-foreign-library libwiringPi)
 
 ;;; Constant
 
