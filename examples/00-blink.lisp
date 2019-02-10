@@ -1,7 +1,6 @@
-(defpackage :cl-raspi/examples/00-blink
-  (:use :cl
-        ::cl-raspi/lib-wiring-pi))
-(in-package :cl-raspi/examples/00-blink)
+(in-package :cl-raspi-examples)
+
+(require 'cffi)
 
 (defun blink ()
   (wiringpi-setup-gpio)
