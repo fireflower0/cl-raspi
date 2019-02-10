@@ -12,15 +12,6 @@
 
 (use-foreign-library libwiringPi)
 
-;;; Constant
-
-;; GPIO11(pin 23)
-(defconstant +gpio-11+ 11)
-
-;; GPIO Mode
-(defconstant +gpio-input-mode+ 0)
-(defconstant +gpio-output-mode+ 1)
-
 ;;; API
 
 ;; Init wiringPi
