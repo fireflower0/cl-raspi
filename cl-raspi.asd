@@ -6,4 +6,5 @@
     :depends-on ("cffi"
                  "cl-raspi/lib-wiring-pi"
                  "cl-raspi/src/blink"
-                 "cl-raspi/src/gpio-input"))
+                 "cl-raspi/src/gpio-input"
+                 "cl-raspi/src/servomotor"))

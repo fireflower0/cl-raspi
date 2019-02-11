@@ -6,6 +6,10 @@
            :digital-read
            :digital-write
            :pull-updn-control
+           :pwm-set-mode
+           :pwm-set-range
+           :pwm-set-clock
+           :pwm-write
            :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
@@ -34,6 +38,22 @@
 ;; Set the state when nothing is connected to the terminal
 (defcfun ("pullUpDnControl" pull-updn-control) :void
   (pin :int) (pud :int))
+
+;; PWM set mode
+(defcfun ("pwmSetMode" pwm-set-mode) :void
+  (mode :int))
+
+;; PWM set range (default 1024)
+(defcfun ("pwmSetRange" pwm-set-range) :void
+  (range :uint))
+
+;; PWM set clock
+(defcfun ("pwmSetClock" pwm-set-clock) :void
+  (divisor :int))
+
+;; PWM write
+(defcfun ("pwmWrite" pwm-write) :void
+  (pin :int) (value :int))
 
 ;; Delay (millisecond)
 (defcfun ("delay" delay) :void
