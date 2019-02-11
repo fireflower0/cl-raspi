@@ -3,7 +3,9 @@
         :cffi)
   (:export :wiringpi-setup-gpio
            :pin-mode
+           :digital-read
            :digital-write
+           :pull-updn-control
            :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
