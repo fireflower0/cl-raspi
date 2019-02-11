@@ -21,9 +21,17 @@
 (defcfun ("pinMode" pin-mode) :void
   (pin :int) (mode :int))
 
+;; Read the status of the GPIO pin
+(defcfun ("digitalRead" digital-read) :int
+  (pin :int))
+
 ;; Output control of GPIO pin
 (defcfun ("digitalWrite" digital-write) :void
   (pin :int) (value :int))
+
+;; Set the state when nothing is connected to the terminal
+(defcfun ("pullUpDnControl" pull-updn-control) :void
+  (pin :int) (pud :int))
 
 ;; Delay (millisecond)
 (defcfun ("delay" delay) :void
