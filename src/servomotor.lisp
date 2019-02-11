@@ -6,14 +6,16 @@
 
 (defconstant +pin+ 12)
 
-(defparameter *move* 0)
+(defun init ()
+  (wiringpi-setup-gpio)
+  (pin-mode +pin+ +pwm-output+)
+  (pwm-set-mode +pwm-mode-ms+)
+  (pwm-set-range 1024)
+  (pwm-set-clock 375))
 
 (defun main ()
-  (wiringpi-setup-gpio)
-  (pin-mode +pin+ 2)
-  (pwm-set-mode 0)
-  (pwm-set-range 1024)
-  (pwm-set-clock 375)
-  (loop
-    (setf *move* (read))
-    (pwm-write +pin+ *move*)))
+  (init)
+  (let ((move 0))
+    (loop
+      (setf move (read))
+      (pwm-write +pin+ move))))

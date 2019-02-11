@@ -1,7 +1,15 @@
 (defpackage :cl-raspi/lib-wiring-pi
   (:use :cl
         :cffi)
-  (:export :wiringpi-setup-gpio
+  (:export :+input+
+           :+output+
+           :+pwm-output+
+           :+pwm-mode-ms+
+           :+pwm-mode-bal+
+           :+pud-off+
+           :+pud-down+
+           :+pud-up+
+           :wiringpi-setup-gpio
            :pin-mode
            :digital-read
            :digital-write
@@ -17,6 +25,22 @@
     (:unix "libwiringPi.so"))
 
 (use-foreign-library libwiringPi)
+
+;;; Constant
+
+;; Pin mode
+(defconstant +input+      0)
+(defconstant +output+     1)
+(defconstant +pwm-output+ 2)
+
+;; PWM
+(defconstant +pwm-mode-ms+  0)
+(defconstant +pwm-mode-bal+ 1)
+
+;; Pull up/down/none
+(defconstant +pud-off+  0)
+(defconstant +pud-down+ 1)
+(defconstant +pud-up+   2)
 
 ;;; API
 

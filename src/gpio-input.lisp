@@ -8,8 +8,8 @@
 
 (defun main ()
   (wiringpi-setup-gpio)
-  (pin-mode +pin+ 0)
-  (pull-updn-control +pin+ 2)
+  (pin-mode +pin+ +input+)
+  (pull-updn-control +pin+ +pud-up+)
   (loop
      (if (= (digital-read +pin+) 0)
          (format t "Switch ON~%")

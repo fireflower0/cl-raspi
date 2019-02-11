@@ -8,7 +8,7 @@
 
 (defun main ()
   (wiringpi-setup-gpio)
-  (pin-mode +pin+ 1)
+  (pin-mode +pin+ +output+)
 
   ;; Infinite loop (Ctrl-c exits loop)
   (loop
