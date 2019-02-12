@@ -18,6 +18,9 @@
            :pwm-set-range
            :pwm-set-clock
            :pwm-write
+           :wiringpi-i2c-setup
+           :wiringpi-i2c-write-reg8
+           :wiringpi-i2c-read-reg16
            :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
@@ -78,6 +81,18 @@
 ;; PWM write
 (defcfun ("pwmWrite" pwm-write) :void
   (pin :int) (value :int))
+
+;; Initialization of the I2C systems.
+(defcfun ("wiringPiI2CSetup" wiringpi-i2c-setup) :int
+  (fd :int))
+
+;; Writes 8-bit data to the instructed device register.
+(defcfun ("wiringPiI2CWriteReg8" wiringpi-i2c-write-reg8) :int
+  (fd :int) (reg :int) (data :int))
+
+;; It reads the 16-bit value from the indicated device register.
+(defcfun ("wiringPiI2CReadReg16" wiringpi-i2c-read-reg16) :int
+  (fd :int) (reg :int))
 
 ;; Delay (millisecond)
 (defcfun ("delay" delay) :void
