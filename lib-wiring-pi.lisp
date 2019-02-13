@@ -21,6 +21,8 @@
            :wiringpi-i2c-setup
            :wiringpi-i2c-write-reg8
            :wiringpi-i2c-read-reg16
+           :wiringpi-spi-setup
+           :wiringpi-spi-data-rw
            :delay))
 (in-package :cl-raspi/lib-wiring-pi)
 
@@ -45,7 +47,9 @@
 (defconstant +pud-down+ 1)
 (defconstant +pud-up+   2)
 
-;;; API
+;;;; API
+
+;;; Core Library
 
 ;; Init wiringPi
 (defcfun ("wiringPiSetupGpio" wiringpi-setup-gpio) :int)
@@ -66,6 +70,8 @@
 (defcfun ("pullUpDnControl" pull-updn-control) :void
   (pin :int) (pud :int))
 
+;;; PWM Library
+
 ;; PWM set mode
 (defcfun ("pwmSetMode" pwm-set-mode) :void
   (mode :int))
@@ -82,6 +88,8 @@
 (defcfun ("pwmWrite" pwm-write) :void
   (pin :int) (value :int))
 
+;;; I2C Library
+
 ;; Initialization of the I2C systems.
 (defcfun ("wiringPiI2CSetup" wiringpi-i2c-setup) :int
   (fd :int))
@@ -93,6 +101,18 @@
 ;; It reads the 16-bit value from the indicated device register.
 (defcfun ("wiringPiI2CReadReg16" wiringpi-i2c-read-reg16) :int
   (fd :int) (reg :int))
+
+;;; SPI Library
+
+;; SPI initialization
+(defcfun ("wiringPiSPISetup" wiringpi-spi-setup) :int
+  (channel :int) (speed :int))
+
+;; Execute concurrent write/read transactions on the selected SPI bus
+(defcfun ("wiringPiSPIDataRW" wiringpi-spi-data-rw) :int
+  (channel :int) (data :pointer) (len :int))
+
+;;; Other
 
 ;; Delay (millisecond)
 (defcfun ("delay" delay) :void
