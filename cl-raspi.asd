@@ -4,9 +4,11 @@
     :author "fireflower0"
     :license "MIT"
     :depends-on ("cffi"
+                 "ltk"
                  "cl-raspi/lib-wiring-pi"
                  "cl-raspi/src/blink"
                  "cl-raspi/src/gpio-input"
                  "cl-raspi/src/servomotor"
                  "cl-raspi/src/i2c-temperature-sensor"
-                 "cl-raspi/src/3-axis-acceleration-sensor"))
+                 "cl-raspi/src/3-axis-acceleration-sensor"
+                 "cl-raspi/src/i2c-lcd-ltk.lisp"))
