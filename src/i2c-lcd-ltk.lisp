@@ -46,10 +46,8 @@
         (lbl2 (make-instance 'label :text "Second line" :width 60))
         (entry2 (make-instance 'entry))
         (btn2 (make-instance 'button :text "Button2")))
-    (setf (command btn1) (lambda ()
-                           (display-char fd #X80 entry1)))
-    (setf (command btn2) (lambda ()
-                           (display-char fd #XC0 entry2)))
+    (setf (command btn1) (lambda () (display-char fd #X80 entry1)))
+    (setf (command btn2) (lambda () (display-char fd #XC0 entry2)))
     (focus entry1)
     (pack (list lbl1 entry1 btn1 lbl2 entry2 btn2) :fill :x)))
 
@@ -57,7 +55,7 @@
   (wiringpi-i2c-write-reg8 fd #X00 arg1)
   (wiringpi-i2c-write-reg8 fd #X40 arg2))
 
-(defun display-icon-clear (fd)
+(defun control-icon-clear (fd)
   (control-icon fd #X40 #X00)   ; Antenna clear
   (control-icon fd #X42 #X00)   ; Phone clear
   (control-icon fd #X44 #X00)   ; Sound clear
