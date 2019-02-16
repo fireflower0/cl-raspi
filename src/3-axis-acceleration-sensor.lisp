@@ -1,6 +1,7 @@
 (defpackage :cl-raspi/src/3-axis-acceleration-sensor
   (:use :cl
         :cl-raspi/lib-wiring-pi)
+  (:import-from :cffi)
   (:export :main))
 (in-package :cl-raspi/src/3-axis-acceleration-sensor)
 
@@ -21,25 +22,24 @@
 (defconstant +read+  #X80)              ; Read
 (defconstant +write+ #X3F)              ; Write
 
-(defconstant +pin+    8)                ; CS
-(defconstant +output+ 1)
-(defconstant +high+   1)
-(defconstant +low+    0)
+(defconstant +pin+   8)                 ; CS
+(defconstant +high+  1)
+(defconstant +low+   0)
 
 (defun spi-data-rw (channel data &optional (len (length data)))
-  (let ((mp (foreign-alloc :unsigned-char :count len :initial-contents data)))
+  (let ((mp (cffi:foreign-alloc :unsigned-char :count len :initial-contents data)))
     (digital-write +pin+ +low+)
     (wiringpi-spi-data-rw channel mp len)
     (digital-write +pin+ +high+)
     (let ((rval (loop for i from 0 below len
-                   collect (mem-aref mp :unsigned-char i))))
-      (foreign-free mp)
+                   collect (cffi:mem-aref mp :unsigned-char i))))
+      (cffi:foreign-free mp)
       rval)))
 
 (defun spi-read (read-addr)
   (let (outdat out)
-    (setq outdat (list (logior read-addr +read+) #X00))
-    (setq out (spi-data-rw +spi-cs+ outdat))
+    (setf outdat (list (logior read-addr +read+) #X00))
+    (setf out (spi-data-rw +spi-cs+ outdat))
     (nth 1 out)))
 
 (defun spi-write (write-addr data)
@@ -49,7 +49,7 @@
   (let (dat)
     (setq dat (logior (ash high 8) low))
     (if (>= high #X80)
-        (setq dat (- dat 65536)))
+        (setf dat (- dat 65536)))
     (setq dat (ash dat -4))
     dat))
 
@@ -67,19 +67,19 @@
 
     (loop
        ;; Get X axis data
-       (setq lb (spi-read +out-x-l+))
-       (setq hb (spi-read +out-x-h+))
-       (setq x  (conv-two-byte hb lb))
+       (setf lb (spi-read +out-x-l+))
+       (setf hb (spi-read +out-x-h+))
+       (setf x  (conv-two-byte hb lb))
 
        ;; Get Y axis data
-       (setq lb (spi-read +out-y-l+))
-       (setq hb (spi-read +out-y-h+))
-       (setq y  (conv-two-byte hb lb))
+       (setf lb (spi-read +out-y-l+))
+       (setf hb (spi-read +out-y-h+))
+       (setf y  (conv-two-byte hb lb))
 
        ;; Get Z axis data
-       (setq lb (spi-read +out-z-l+))
-       (setq hb (spi-read +out-z-h+))
-       (setq z  (conv-two-byte hb lb))
+       (setf lb (spi-read +out-z-l+))
+       (setf hb (spi-read +out-z-h+))
+       (setf z  (conv-two-byte hb lb))
 
        (format t "x=~6d y=~6d z=~6d~%" x y z)
 
