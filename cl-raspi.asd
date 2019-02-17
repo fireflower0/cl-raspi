@@ -11,4 +11,5 @@
                  "cl-raspi/src/servomotor"
                  "cl-raspi/src/i2c-temperature-sensor"
                  "cl-raspi/src/3-axis-acceleration-sensor"
-                 "cl-raspi/src/i2c-lcd-ltk"))
+                 "cl-raspi/src/i2c-lcd-ltk"
+                 "cl-raspi/src/i2c-oled-ssd1306"))
