@@ -44,12 +44,25 @@
 (defun ssd1306-control (fd value)
   (wiringpi-i2c-write-reg8 fd +ssd1306-control+ value))
 
+(defconstant +dot+
+  (make-array
+   '(8)
+   :initial-contents
+   '(#B11111111
+     #B00000111
+     #B11111111
+     #B00000111
+     #B00000101
+     #B00001001
+     #B00010001
+     #B00100001)))
+
 (defun init (fd)
   ;; Display Off                         #XAE
   (ssd1306-command fd +ssd1306-disp-off+)
   ;; Set MUX Raio                        #XA8, #X3F(63)
   (ssd1306-command fd +ssd1306-set-multiplex+)
-  (ssd1306-command fd (1- +ssd1306-lcd-height+))
+  (ssd1306-command fd (1- *ssd1306-lcd-height*))
   ;; Set Display Offset                  #XD3, #X00
   (ssd1306-command fd +ssd1306-set-disp-offset+)
   (ssd1306-command fd #X00)   ; no offset
