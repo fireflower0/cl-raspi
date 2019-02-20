@@ -20,6 +20,7 @@
            :pwm-write
            :wiringpi-i2c-setup
            :wiringpi-i2c-write-reg8
+           :wiringpi-i2c-read
            :wiringpi-i2c-read-reg16
            :wiringpi-spi-setup
            :wiringpi-spi-data-rw
@@ -97,6 +98,9 @@
 ;; Writes 8-bit data to the instructed device register.
 (defcfun ("wiringPiI2CWriteReg8" wiringpi-i2c-write-reg8) :int
   (fd :int) (reg :int) (data :int))
+
+(defcfun ("wiringPiI2CRead" wiringpi-i2c-read) :int
+  (fd :int))
 
 ;; It reads the 16-bit value from the indicated device register.
 (defcfun ("wiringPiI2CReadReg16" wiringpi-i2c-read-reg16) :int
