@@ -25,6 +25,9 @@
 (defconstant +ssd1306-set-column-addr+   #X21)
 (defconstant +ssd1306-set-page-addr+     #X22)
 
+(defparameter *ssd1306-lcd-width*         128)
+(defparameter *ssd1306-lcd-height*        64)
+
 ;;; I2C Bus data format
 ;; +----+-----+-+-+-+-+-+-+
 ;; | Co | D/C |0|0|0|0|0|0|
@@ -109,6 +112,7 @@
   (ssd1306-command fd (+ #X10 (ash (+ x 2) -4)))
   (ssd1306-command fd (+ #XB0 (ash y -3)))
   (ssd1306-command fd #XE0)
+  (wiringpi-i2c-read fd)
   (ssd1306-onedata fd (logior (ash 1 (logand y #X07))
                               (wiringpi-i2c-read fd)))
   (ssd1306-command fd #XEE))
@@ -121,18 +125,18 @@
   (setf *y0* y))
 
 (defun drawto (fd x y)
-  (let* ((dx (abs (- x x0)))
-         (dy (abs (- y y0)))
-         (sx (if (< x0 x) 1 -1))
-         (sy (if (< y0 y) 1 -1))
+  (let* ((dx (abs (- x *x0*)))
+         (dy (abs (- y *y0*)))
+         (sx (if (< *x0* x) 1 -1))
+         (sy (if (< *y0* y) 1 -1))
          (err (- dx dy))
          e2)
     (loop
-       (point fd x0 y0)
-       (when (and (= x0 x) (= y0 y)) (return))
+       (point fd *x0* *y0*)
+       (when (and (= *x0* x) (= *y0* y)) (return))
        (setf e2 (ash err 1)) 
-       (when (> e2 (- dy)) (decf err dy) (incf x0 sx))
-       (when (< e2 dx) (incf err dx) (incf y0 sy)))))
+       (when (> e2 (- dy)) (decf err dy) (incf *x0* sx))
+       (when (< e2 dx) (incf err dx) (incf *y0* sy)))))
 
 (defun main ()
   (let ((fd (wiringpi-i2c-setup +i2c-addr+)))
