@@ -12,7 +12,7 @@
 (defconstant +ssd1306-set-multiplex+     #XA8)
 (defconstant +ssd1306-set-disp-offset+   #XD3)
 (defconstant +ssd1306-set-start-line+    #X40)
-(defconstant +ssd1306-seg-re-map+        #XA0)
+(defconstant +ssd1306-seg-re-map+        #XA1)
 (defconstant +ssd1306-com-scan-inc+      #XC0)
 (defconstant +ssd1306-com-scan-dec+      #XC8)
 (defconstant +ssd1306-set-com-pins+      #XDA)
@@ -71,7 +71,7 @@
   ;; Set Segment re-map                  #XA0/#XA1
   (ssd1306-command fd +ssd1306-seg-re-map+)
   ;; Set COM Output Scan Direction       #XC0/#XC8
-  (ssd1306-command fd +ssd1306-com-scan-inc+)
+  (ssd1306-command fd +ssd1306-com-scan-dec+)
   ;; Set COM Pins hardware configuration #XDA, #X02
   (ssd1306-command fd +ssd1306-set-com-pins+)
   (ssd1306-command fd #X02)
