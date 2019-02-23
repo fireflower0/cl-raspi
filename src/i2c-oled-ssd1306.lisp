@@ -74,7 +74,7 @@
   (ssd1306-command fd +ssd1306-com-scan-dec+)
   ;; Set COM Pins hardware configuration #XDA, #X02
   (ssd1306-command fd +ssd1306-set-com-pins+)
-  (ssd1306-command fd #X02)
+  (ssd1306-command fd #X12)
   ;; Set Contrast Control                #X81, #X7F
   (ssd1306-command fd +ssd1306-set-contrast+)
   (ssd1306-command fd #X7F)
