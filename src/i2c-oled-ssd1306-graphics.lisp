@@ -12,7 +12,7 @@
 (defconstant +ssd1306-set-multiplex+     #XA8)
 (defconstant +ssd1306-set-disp-offset+   #XD3)
 (defconstant +ssd1306-set-start-line+    #X40)
-(defconstant +ssd1306-seg-re-map+        #XA0)
+(defconstant +ssd1306-seg-re-map+        #XA1)
 (defconstant +ssd1306-com-scan-inc+      #XC0)
 (defconstant +ssd1306-com-scan-dec+      #XC8)
 (defconstant +ssd1306-set-com-pins+      #XDA)
@@ -67,10 +67,10 @@
   ;; Set Segment re-map                  #XA0/#XA1
   (ssd1306-command fd +ssd1306-seg-re-map+)
   ;; Set COM Output Scan Direction       #XC0/#XC8
-  (ssd1306-command fd +ssd1306-com-scan-inc+)
+  (ssd1306-command fd +ssd1306-com-scan-dec+)
   ;; Set COM Pins hardware configuration #XDA, #X02
   (ssd1306-command fd +ssd1306-set-com-pins+)
-  (ssd1306-command fd #X02)
+  (ssd1306-command fd #X12)
   ;; Set Contrast Control                #X81, #X7F
   (ssd1306-command fd +ssd1306-set-contrast+)
   (ssd1306-command fd #X7F)
@@ -112,13 +112,12 @@
   (ssd1306-command fd (+ #X10 (ash (+ x 2) -4)))
   (ssd1306-command fd (+ #XB0 (ash y -3)))
   (ssd1306-command fd #XE0)
-  (wiringpi-i2c-read fd)
-  (ssd1306-onedata fd (logior (ash 1 (logand y #X07))
-                              (wiringpi-i2c-read fd)))
+  (ssd1306-onedata fd (ash 1 (logand y #X07)))
   (ssd1306-command fd #XEE))
 
-(defparameter *x0* 0)
-(defparameter *y0* 0)
+(defparameter *x0* 32)
+(defparameter *y0* 32)
+(defparameter *v* '(1 0))
 
 (defun moveto (x y)
   (setf *x0* x)
@@ -132,11 +131,12 @@
          (err (- dx dy))
          e2)
     (loop
-       (point fd *x0* *y0*)
-       (when (and (= *x0* x) (= *y0* y)) (return))
-       (setf e2 (ash err 1)) 
-       (when (> e2 (- dy)) (decf err dy) (incf *x0* sx))
-       (when (< e2 dx) (incf err dx) (incf *y0* sy)))))
+      (point fd *x0* *y0*)
+      (when (and (= *x0* x) (= *y0* y)) (return))
+      (setf e2 (ash err 1))
+      (when (> e2 (- dy)) (decf err dy) (incf *x0* sx))
+      (when (< e2 dx) (incf err dx) (incf *y0* sy))
+      (delay 10))))
 
 (defun main ()
   (let ((fd (wiringpi-i2c-setup +i2c-addr+)))
@@ -144,3 +144,30 @@
     (clear fd)
     (moveto 0 0)
     (drawto fd 127 63)))
+
+(defun forward (fd size)
+  (drawto fd
+   (+ *x0* (* (first *v*) size))
+   (+ *y0* (* (second *v*) size))))
+
+(defun left ()
+  (setf *v* (list (- (second *v*)) (first *v*))))
+
+(defun right ()
+  (setf *v* (list (second *v*) (- (first *v*)))))
+
+(defun ldragon (fd size level)
+  (cond
+   ((= level 0) (forward fd size))
+   (t
+    (ldragon fd size (- level 1))
+    (left)
+    (rdragon fd size (- level 1)))))
+
+(defun rdragon (fd size level)
+  (cond
+   ((= level 0) (forward fd size))
+   (t
+    (ldragon fd size (- level 1))
+    (right)
+    (rdragon fd size (- level 1)))))
