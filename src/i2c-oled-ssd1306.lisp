@@ -74,7 +74,7 @@
   (ssd1306-command fd +ssd1306-com-scan-dec+)
   ;; Set COM Pins hardware configuration #XDA, #X02
   (ssd1306-command fd +ssd1306-set-com-pins+)
-  (ssd1306-command fd #X02)
+  (ssd1306-command fd #X12)
   ;; Set Contrast Control                #X81, #X7F
   (ssd1306-command fd +ssd1306-set-contrast+)
   (ssd1306-command fd #X7F)
@@ -111,22 +111,28 @@
       (dotimes (k 8)
         (ssd1306-data fd #X00)))))
 
-(defun display-picture (fd)
-  (dotimes (on-off 2)
+(defun display-pic (fd)
+  (let ((dummy 0)
+        (b 0))
     (dotimes (i 8)
       (ssd1306-command fd (logior #XB0 i))           ; Set Page Start Address
       (ssd1306-command fd +ssd1306-set-column-addr+) ; Set Column Address
       (ssd1306-command fd (logior #X00 0))           ; Start column address
       (ssd1306-command fd #X7F)                      ; Stop column Address
       (dotimes (j 16)
-        (if (= on-off 1)
-            (dotimes (k 8) (ssd1306-data fd #X00))
-            (dotimes (k 8) (ssd1306-data fd (aref +dot+ k))))))
-    (delay 1000)))
+        (do ((m 7 (1- m)))
+            ((< m 0))
+          (dotimes (n 8)
+            (setf dummy (logand (ash (aref +dot+ n) (- m)) #X01))
+            (when (> dummy 0)
+              (setf b (logior b (ash dummy n)))))
+          (ssd1306-data fd b)
+          (setf b 0))
+        (delay 500)))))
 
 (defun main ()
   (let ((fd (wiringpi-i2c-setup +i2c-addr+)))
     (init fd)
     (display-black fd)
-    (dotimes (n 10)
-      (display-picture fd))))
+    (display-pic fd)
+    (display-black fd)))
