@@ -15,7 +15,10 @@
 
 (defun main ()
   (init)
-  (let ((move 0))
+  (let ((set-degree 0)
+        (move-deg 0))
     (loop
-      (setf move (read))
-      (pwm-write +pin+ move))))
+      (setf set-degree (read))
+      (when (and (<= set-degree 90) (>= set-degree -90))
+        (setf move-deg (floor (+ 81 (* (/ 41 90) set-degree))))
+        (pwm-write +pin+ move-deg)))))
