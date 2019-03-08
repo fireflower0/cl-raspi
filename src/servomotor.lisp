@@ -5,13 +5,15 @@
 (in-package :cl-raspi/src/servomotor)
 
 (defconstant +pin+ 12)
+(defparameter *pwm-generator* 1024)
+(defparameter *pwm-clock* 375)
 
 (defun init ()
   (wiringpi-setup-gpio)
   (pin-mode +pin+ +pwm-output+)
   (pwm-set-mode +pwm-mode-ms+)
-  (pwm-set-range 1024)
-  (pwm-set-clock 375))
+  (pwm-set-range *pwm-generator*)
+  (pwm-set-clock *pwm-clock*))
 
 (defun main ()
   (init)
