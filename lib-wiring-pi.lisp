@@ -18,6 +18,8 @@
            :pwm-set-range
            :pwm-set-clock
            :pwm-write
+           :soft-pwm-create
+           :soft-pwm-write
            :wiringpi-i2c-setup
            :wiringpi-i2c-write-reg8
            :wiringpi-i2c-read
@@ -87,6 +89,14 @@
 
 ;; PWM write
 (defcfun ("pwmWrite" pwm-write) :void
+  (pin :int) (value :int))
+
+;; Soft PWM Create
+(defcfun ("softPwmCreate" soft-pwm-create) :int
+  (pin :int) (initial-value :int) (pwm-range :int))
+
+;; Soft PWM Write
+(defcfun ("softPwmWrite" soft-pwm-write) :void
   (pin :int) (value :int))
 
 ;;; I2C Library
