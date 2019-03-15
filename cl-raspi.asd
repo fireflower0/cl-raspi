@@ -15,4 +15,5 @@
                  "cl-raspi/src/i2c-oled-ssd1306"
                  "cl-raspi/src/i2c-oled-ssd1306-graphics"
                  "cl-raspi/src/buzzer"
-                 "cl-raspi/src/7seg"))
+                 "cl-raspi/src/7seg"
+                 "cl-raspi/src/color"))
