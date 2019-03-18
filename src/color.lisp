@@ -16,9 +16,9 @@
   (pin-mode +blue-pin+  +output+)
   (pin-mode +red-pin+   +output+)
   ;; PWM出力設定
-  (soft-pwm-create +green-pin+ 0.100)
-  (soft-pwm-create +blue-pin+  0.100)
-  (soft-pwm-create +red-pin+   0.100)
+  (soft-pwm-create +green-pin+ 0 100)
+  (soft-pwm-create +blue-pin+  0 100)
+  (soft-pwm-create +red-pin+   0 100)
   ;; PWMで各端子に出力
   (soft-pwm-write +green-pin+ 30)
   (soft-pwm-write +blue-pin+  50)
