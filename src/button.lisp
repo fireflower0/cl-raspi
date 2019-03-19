@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/gpio-input
+(defpackage :cl-raspi/src/button
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/gpio-input)
+(in-package :cl-raspi/src/button)
 
 (defconstant +pin+ 17)
 
