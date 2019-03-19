@@ -7,7 +7,7 @@
                  "ltk"
                  "cl-raspi/lib-wiring-pi"
                  "cl-raspi/src/blink"
-                 "cl-raspi/src/gpio-input"
+                 "cl-raspi/src/button"
                  "cl-raspi/src/servomotor"
                  "cl-raspi/src/i2c-temperature-sensor"
                  "cl-raspi/src/3-axis-acceleration-sensor"
