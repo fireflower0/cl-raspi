@@ -7,6 +7,7 @@
                  "ltk"
                  "cl-raspi/lib-wiring-pi"
                  "cl-raspi/bo1602dgrnjb"
+                 "cl-raspi/ssd1306"
                  "cl-raspi/src/blink"
                  "cl-raspi/src/button"
                  "cl-raspi/src/servomotor"
