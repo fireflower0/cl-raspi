@@ -38,7 +38,7 @@
   (dotimes (count +column+)                 ; Clear first line
     (wiringpi-i2c-write-reg8 fd #X40 #X20))
   (wiringpi-i2c-write-reg8 fd #X00 line)    ; Reset cursor first line
-  (loop :for char :across (text entry)      ; Display string
+  (loop :for char :across entry             ; Display string
      :do (wiringpi-i2c-write-reg8 fd #X40 (char-code char))))
 
 (defun byte-swap (num-value)
@@ -56,4 +56,7 @@
         (lcd-fd     (wiringpi-i2c-setup +i2c-addr-lcd+)))
     (lcd-init lcd-fd)
     (wiringpi-i2c-write-reg8 adt7410-fd #X03 #X80)
-    (display-text lcd-fd #X80 (get-data adt7410-fd))))
+    (loop
+      (display-text lcd-fd #X80 (format nil "Temperature:"))
+      (display-text lcd-fd #XC0 (format nil "~,2f" (get-data adt7410-fd)))
+      (delay 1000))))
