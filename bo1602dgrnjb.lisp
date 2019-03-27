@@ -54,9 +54,13 @@
                 ,+icon-other+)))
 
 (defun i2c-command-write (data)
+  (unless *lcd-fd*
+    (error "Not initialized! Execute the bo1602dgrnjb-init function"))
   (wiringpi-i2c-write-reg8 *lcd-fd* #X00 data))
 
 (defun i2c-data-write (data)
+  (unless *lcd-fd*
+    (error "Not initialized! Execute the bo1602dgrnjb-init function"))
   (wiringpi-i2c-write-reg8 *lcd-fd* #X40 data))
 
 (defun bo1602dgrnjb-init ()
@@ -131,7 +135,8 @@
   (i2c-data-write    (bo1602dgrnjb-get-icon-ram-bit icon-addr)))
 
 (defun bo1602dgrnjb-icon-index-p (index)
-  (and (>= index 0)
+  (and (numberp index)
+       (>= index 0)
        (< index +icon-num+)))
 
 (defun bo1602dgrnjb-icon-display (index)
