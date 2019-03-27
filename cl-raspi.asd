@@ -6,6 +6,7 @@
     :depends-on ("cffi"
                  "ltk"
                  "cl-raspi/lib-wiring-pi"
+                 "cl-raspi/bo1602dgrnjb"
                  "cl-raspi/src/blink"
                  "cl-raspi/src/button"
                  "cl-raspi/src/servomotor"
