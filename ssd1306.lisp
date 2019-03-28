@@ -1,7 +1,8 @@
 (defpackage :cl-raspi/ssd1306
   (:use :cl
         :cl-raspi/lib-wiring-pi)
-  (:export :ssd1306-init))
+  (:export :ssd1306-init
+           :ssd1306-display-black))
 (in-package :cl-raspi/ssd1306)
 
 ;; I2Cシステムの初期化
@@ -46,7 +47,7 @@
 (defun ssd1306-control (value)
   (wiringpi-i2c-write-reg8 *oled-fd* +ssd1306-control+ value))
 
-(defun init ()
+(defun ssd1306-init ()
   (setf *oled-fd* (wiringpi-i2c-setup +i2c-addr+))
   ;; Display Off                         #XAE
   (ssd1306-command +ssd1306-disp-off+)
@@ -94,7 +95,7 @@
   ;; Display On                          #XAF
   (ssd1306-command +ssd1306-disp-on+))
 
-(defun display-black ()
+(defun ssd1306-display-black ()
   (dotimes (i 8)
     (ssd1306-control (logior #XB0 i))   ; set page start address
     (dotimes (j 16)
