@@ -44,7 +44,7 @@
 (defun ssd1306-control (fd value)
   (wiringpi-i2c-write-reg8 fd +ssd1306-control+ value))
 
-(defconstant +dot+
+(defparameter *dot*
   (make-array
    '(8)
    :initial-contents
@@ -123,7 +123,7 @@
         (do ((m 7 (1- m)))
             ((< m 0))
           (dotimes (n 8)
-            (setf dummy (logand (ash (aref +dot+ n) (- m)) #X01))
+            (setf dummy (logand (ash (aref *dot* n) (- m)) #X01))
             (when (> dummy 0)
               (setf b (logior b (ash dummy n)))))
           (ssd1306-data fd b)
