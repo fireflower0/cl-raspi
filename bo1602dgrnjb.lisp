@@ -23,35 +23,35 @@
 
 ;; Icon address
 (defconstant +icon-num+ 13)
-(defconstant +icon-antenna+  '(#X40 #X10))
-(defconstant +icon-phone+    '(#X42 #X10))
-(defconstant +icon-sound+    '(#X44 #X10))
-(defconstant +icon-input+    '(#X46 #X10))
-(defconstant +icon-up+       '(#X47 #X10))
-(defconstant +icon-down+     '(#X47 #X08))
-(defconstant +icon-keylock+  '(#X49 #X10))
-(defconstant +icon-mute+     '(#X4B #X10))
-(defconstant +icon-battery1+ '(#X4D #X10))
-(defconstant +icon-battery2+ '(#X4D #X08))
-(defconstant +icon-battery3+ '(#X4D #X04))
-(defconstant +icon-battery4+ '(#X4D #X02))
-(defconstant +icon-other+    '(#X4F #X10))
+(defparameter *icon-antenna*  '(#X40 #X10))
+(defparameter *icon-phone*    '(#X42 #X10))
+(defparameter *icon-sound*    '(#X44 #X10))
+(defparameter *icon-input*    '(#X46 #X10))
+(defparameter *icon-up*       '(#X47 #X10))
+(defparameter *icon-down*     '(#X47 #X08))
+(defparameter *icon-keylock*  '(#X49 #X10))
+(defparameter *icon-mute*     '(#X4B #X10))
+(defparameter *icon-battery1* '(#X4D #X10))
+(defparameter *icon-battery2* '(#X4D #X08))
+(defparameter *icon-battery3* '(#X4D #X04))
+(defparameter *icon-battery4* '(#X4D #X02))
+(defparameter *icon-other*    '(#X4F #X10))
 (defparameter *icon-addr-arr*
   (make-array +icon-num+
               :initial-contents
-              `(,+icon-antenna+
-                ,+icon-phone+
-                ,+icon-sound+
-                ,+icon-input+
-                ,+icon-up+
-                ,+icon-down+
-                ,+icon-keylock+
-                ,+icon-mute+
-                ,+icon-battery1+
-                ,+icon-battery2+
-                ,+icon-battery3+
-                ,+icon-battery4+
-                ,+icon-other+)))
+              `(,*icon-antenna*
+                ,*icon-phone*
+                ,*icon-sound*
+                ,*icon-input*
+                ,*icon-up*
+                ,*icon-down*
+                ,*icon-keylock*
+                ,*icon-mute*
+                ,*icon-battery1*
+                ,*icon-battery2*
+                ,*icon-battery3*
+                ,*icon-battery4*
+                ,*icon-other*)))
 
 (defun i2c-command-write (data)
   (unless *lcd-fd*
