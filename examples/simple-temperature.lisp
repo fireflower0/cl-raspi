@@ -1,9 +1,9 @@
-(defpackage :cl-raspi/src/simple-temperature
+(defpackage :cl-raspi/examples/simple-temperature
   (:use :cl
         :cl-raspi/lib-wiring-pi
         :cl-raspi/bo1602dgrnjb)
   (:export :main))
-(in-package :cl-raspi/src/simple-temperature)
+(in-package :cl-raspi/examples/simple-temperature)
 
 ;; I2C device address (0x48)
 (defconstant +i2c-addr-adt7410+ #X48)

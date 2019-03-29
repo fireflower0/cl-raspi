@@ -1,9 +1,9 @@
-(defpackage :cl-raspi/src/3-axis-acceleration-sensor
+(defpackage :cl-raspi/examples/3-axis-acceleration-sensor
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:import-from :cffi)
   (:export :main))
-(in-package :cl-raspi/src/3-axis-acceleration-sensor)
+(in-package :cl-raspi/examples/3-axis-acceleration-sensor)
 
 (defconstant +spi-cs+ 0)                ; Select target SPI device
 (defconstant +spi-speed+ 100000)        ; SPI communication speed

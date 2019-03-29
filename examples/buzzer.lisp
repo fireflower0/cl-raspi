@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/buzzer
+(defpackage :cl-raspi/examples/buzzer
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/buzzer)
+(in-package :cl-raspi/examples/buzzer)
 
 (defconstant +pin+ 23)
 

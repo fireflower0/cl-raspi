@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/i2c-oled-ssd1306-graphics
+(defpackage :cl-raspi/examples/i2c-oled-ssd1306-graphics
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/i2c-oled-ssd1306-graphics)
+(in-package :cl-raspi/examples/i2c-oled-ssd1306-graphics)
 
 (defconstant +i2c-addr+ #X3C)
 

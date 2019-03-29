@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/blink
+(defpackage :cl-raspi/examples/blink
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/blink)
+(in-package :cl-raspi/examples/blink)
 
 (defconstant +pin+ 11)
 

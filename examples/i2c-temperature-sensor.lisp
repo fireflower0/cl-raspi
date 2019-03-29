@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/i2c-temperature-sensor
+(defpackage :cl-raspi/examples/i2c-temperature-sensor
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/i2c-temperature-sensor)
+(in-package :cl-raspi/examples/i2c-temperature-sensor)
 
 ;; I2C device address (0x48)
 (defconstant +i2c-addr+ #X48)

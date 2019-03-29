@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/servomotor
+(defpackage :cl-raspi/examples/servomotor
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/servomotor)
+(in-package :cl-raspi/examples/servomotor)
 
 (defconstant +pin+ 12)
 (defparameter *pwm-generator* 1024)

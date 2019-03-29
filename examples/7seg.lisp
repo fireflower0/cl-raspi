@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/7seg
+(defpackage :cl-raspi/examples/7seg
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/7seg)
+(in-package :cl-raspi/examples/7seg)
 
 (defconstant +d0-pin+ 18)
 (defconstant +d1-pin+ 23)

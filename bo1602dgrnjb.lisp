@@ -36,7 +36,7 @@
 (defconstant +icon-battery3+ '(#X4D #X04))
 (defconstant +icon-battery4+ '(#X4D #X02))
 (defconstant +icon-other+    '(#X4F #X10))
-(defconstant +icon-addr-arr+
+(defparameter *icon-addr-arr*
   (make-array +icon-num+
               :initial-contents
               `(,+icon-antenna+
@@ -142,7 +142,7 @@
 (defun bo1602dgrnjb-icon-display (index)
   (unless (bo1602dgrnjb-icon-index-p index)
     (error "Invalid index: ~A(0-12)" index))
-  (bo1602dgrnjb-icon (aref +icon-addr-arr+ index)))
+  (bo1602dgrnjb-icon (aref *icon-addr-arr* index)))
 
 (defun bo1602dgrnjb-icon-all-clear ()
   (bo1602dgrnjb-icon '(#X40 #X00))  ; Antenna clear

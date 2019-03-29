@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/button
+(defpackage :cl-raspi/examples/button
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/button)
+(in-package :cl-raspi/examples/button)
 
 (defconstant +pin+ 17)
 

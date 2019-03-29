@@ -1,8 +1,8 @@
-(defpackage :cl-raspi/src/color
+(defpackage :cl-raspi/examples/color
   (:use :cl
         :cl-raspi/lib-wiring-pi)
   (:export :main))
-(in-package :cl-raspi/src/color)
+(in-package :cl-raspi/examples/color)
 
 (defconstant +green-pin+ 18)
 (defconstant +blue-pin+  23)
