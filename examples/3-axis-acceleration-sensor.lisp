@@ -22,15 +22,12 @@
 (defconstant +read+  #X80)              ; Read
 (defconstant +write+ #X3F)              ; Write
 
-(defconstant +pin+   8)                 ; CS
 (defconstant +high+  1)
 (defconstant +low+   0)
 
 (defun spi-data-rw (channel data &optional (len (length data)))
   (let ((mp (cffi:foreign-alloc :unsigned-char :count len :initial-contents data)))
-    (digital-write +pin+ +low+)
     (wiringpi-spi-data-rw channel mp len)
-    (digital-write +pin+ +high+)
     (let ((rval (loop for i from 0 below len
                    collect (cffi:mem-aref mp :unsigned-char i))))
       (cffi:foreign-free mp)
@@ -53,12 +50,15 @@
     (setq dat (ash dat -4))
     dat))
 
+(defun get-acceleration (low-reg high-reg)
+  (let* ((lb  (spi-read low-reg))
+         (hb  (spi-read high-reg))
+         (ret (conv-two-byte hb lb)))
+    ret))
+
 (defun main ()
   (let (lb hb x y z)
     (wiringpi-spi-setup +spi-cs+ +spi-speed+)
-    (wiringpi-setup-gpio)
-    (pin-mode +pin+ +output+)
-    (digital-write +pin+ +high+)
 
     (if (equal (spi-read +who-am-i+) #X33)
         (format t "I AM LIS3DH~%")
@@ -66,21 +66,8 @@
     (spi-write +ctrl-reg1+ #X77)
 
     (loop
-       ;; Get X axis data
-       (setf lb (spi-read +out-x-l+))
-       (setf hb (spi-read +out-x-h+))
-       (setf x  (conv-two-byte hb lb))
-
-       ;; Get Y axis data
-       (setf lb (spi-read +out-y-l+))
-       (setf hb (spi-read +out-y-h+))
-       (setf y  (conv-two-byte hb lb))
-
-       ;; Get Z axis data
-       (setf lb (spi-read +out-z-l+))
-       (setf hb (spi-read +out-z-h+))
-       (setf z  (conv-two-byte hb lb))
-
-       (format t "x=~6d y=~6d z=~6d~%" x y z)
-
+       (format t "x=~6d y=~6d z=~6d~%"
+               (get-acceleration +out-x-l+ +out-x-h+)
+               (get-acceleration +out-y-l+ +out-y-h+)
+               (get-acceleration +out-z-l+ +out-z-h+))
        (delay 500))))
