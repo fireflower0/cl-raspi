@@ -30,11 +30,10 @@
 (in-package :cl-raspi/lib-wiring-pi)
 
 (define-foreign-library libwiringPi
-    (:unix "libwiringPi.so"))
+  (:unix "libwiringPi.so")
+  (t (:default "libwiringPi")))
 
 (use-foreign-library libwiringPi)
-
-;;; Constant
 
 ;; Pin mode
 (defconstant +input+      0)
@@ -49,10 +48,6 @@
 (defconstant +pud-off+  0)
 (defconstant +pud-down+ 1)
 (defconstant +pud-up+   2)
-
-;;;; API
-
-;;; Core Library
 
 ;; Init wiringPi
 (defcfun ("wiringPiSetupGpio" wiringpi-setup-gpio) :int)
@@ -72,8 +67,6 @@
 ;; Set the state when nothing is connected to the terminal
 (defcfun ("pullUpDnControl" pull-updn-control) :void
   (pin :int) (pud :int))
-
-;;; PWM Library
 
 ;; PWM set mode
 (defcfun ("pwmSetMode" pwm-set-mode) :void
@@ -99,7 +92,13 @@
 (defcfun ("softPwmWrite" soft-pwm-write) :void
   (pin :int) (value :int))
 
-;;; I2C Library
+;; Analog Read
+(defcfun ("analogRead" analog-read) :int
+  (pin :int))
+
+;; Analog Write
+(defcfun ("analogWrite" analog-write) :void
+  (pin :int) (value :int))
 
 ;; Initialization of the I2C systems.
 (defcfun ("wiringPiI2CSetup" wiringpi-i2c-setup) :int
@@ -116,8 +115,6 @@
 (defcfun ("wiringPiI2CReadReg16" wiringpi-i2c-read-reg16) :int
   (fd :int) (reg :int))
 
-;;; SPI Library
-
 ;; SPI initialization
 (defcfun ("wiringPiSPISetup" wiringpi-spi-setup) :int
   (channel :int) (speed :int))
@@ -125,8 +122,6 @@
 ;; Execute concurrent write/read transactions on the selected SPI bus
 (defcfun ("wiringPiSPIDataRW" wiringpi-spi-data-rw) :int
   (channel :int) (data :pointer) (len :int))
-
-;;; Other
 
 ;; Delay (millisecond)
 (defcfun ("delay" delay) :void
