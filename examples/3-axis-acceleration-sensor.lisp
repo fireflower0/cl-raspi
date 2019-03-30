@@ -42,10 +42,11 @@
 (defun spi-write (write-addr data)
   (spi-data-rw +spi-cs+ (list (logand write-addr +write+) data)))
 
+;; -0x800 ~ 0x7FF
 (defun conv-two-byte (high low)
   (let ((dat (logior (ash high 8) low)))
     (when (>= high #X80)
-      (decf dat 65536))
+      (decf dat #X10000))
     (ash dat -4)))
 
 (defun get-acceleration (low-reg high-reg)
