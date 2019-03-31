@@ -29,12 +29,14 @@
       rval)))
 
 (defun spi-read (read-addr)
-  (let* ((outdat (list (logior read-addr +read+) #X00))
-         (out    (spi-data-rw +spi-cs+ outdat)))
-    (nth 1 out)))
+  (let* ((rw-data (list (logior read-addr +read+) #X00))
+         (result  (spi-data-rw +spi-cs+ rw-data)))
+    (nth 1 result)))
 
 (defun spi-write (write-addr data)
-  (spi-data-rw +spi-cs+ (list (logand write-addr +write+) data)))
+  (let* ((rw-data (list (logand write-addr +write+) data))
+         (result  (spi-data-rw +spi-cs+ rw-data)))
+    result))
 
 ;; -0x800 ~ 0x7FF
 (defun conv-two-byte (high low)
