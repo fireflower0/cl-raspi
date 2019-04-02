@@ -6,10 +6,9 @@
            :ssd1306-point))
 (in-package :cl-raspi/ssd1306)
 
-
 ;; I2C device address (0x3e)
-(defconstant +i2c-addr-oled+ #X3C)
-(defparameter *oled-fd* nil)
+(defconstant +ssd1306-i2c-addr+ #X3C)
+(defparameter *ssd1306-fd* nil)
 
 (defconstant +ssd1306-disp-on+           #XAF)
 (defconstant +ssd1306-disp-off+          #XAE)
@@ -47,7 +46,7 @@
 (defconstant +ssd1306-onedata+ #XC0)
 
 (defun ssd1306-i2c-write (type value)
-  (unless *oled-fd*
+  (unless *ssd1306-fd*
     (error "Not initialized! Execute the ssd1306-init function"))
   (wiringpi-i2c-write-reg8 *oled-fd* type value))
 
