@@ -6,6 +6,7 @@
     :depends-on ("cffi"
                  "cl-raspi/lib-wiring-pi"
                  "cl-raspi/bo1602dgrnjb"
+                 "cl-raspi/ssd1306"
                  "cl-raspi/examples/blink"
                  "cl-raspi/examples/button"
                  "cl-raspi/examples/servomotor"
