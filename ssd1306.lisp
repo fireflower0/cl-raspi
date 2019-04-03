@@ -63,7 +63,7 @@
   (ssd1306-i2c-write +ssd1306-onedata+ value))
 
 (defun ssd1306-init ()
-  (setf *oled-fd* (wiringpi-i2c-setup +i2c-addr-oled+))
+  (setf *ssd1306-fd* (wiringpi-i2c-setup +ssd1306-i2c-addr+))
   ;; Display Off                         #XAE
   (ssd1306-command +ssd1306-disp-off+)
   ;; Set MUX Raio                        #XA8, #X3F(63)
