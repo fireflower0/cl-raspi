@@ -1,126 +1,134 @@
 (defpackage :cl-raspi/ssd1306
   (:use :cl
-        :cl-raspi/lib-wiring-pi)
-  (:export :ssd1306-init
-           :ssd1306-clear
-           :ssd1306-point))
+        :cl-raspi/lib-wiring-pi))
 (in-package :cl-raspi/ssd1306)
 
-;; I2C device address (0x3e)
-(defconstant +ssd1306-i2c-addr+ #X3C)
-(defparameter *ssd1306-fd* nil)
+;; Constants
+(defconstant +ssd1306-i2c-address+           #X3C)
+(defconstant +ssd1306-set-contrast+          #X81)
+(defconstant +ssd1306-display-all-on-resume+ #XA4)
+(defconstant +ssd1306-display-all-on+        #XA5)
+(defconstant +ssd1306-normal-display+        #XA6)
+(defconstant +ssd1306-invert-display+        #XA7)
+(defconstant +ssd1306-display-off+           #XAE)
+(defconstant +ssd1306-display-on+            #XAF)
+(defconstant +ssd1306-set-display-offset+    #XD3)
+(defconstant +ssd1306-set-com-pins+          #XDA)
+(defconstant +ssd1306-set-vcom-detect+       #XDB)
+(defconstant +ssd1306-set-display-clock-div+ #XD5)
+(defconstant +ssd1306-set-pre-charge+        #XD9)
+(defconstant +ssd1306-set-multi-plex+        #XA8)
+(defconstant +ssd1306-set-low-column+        #X00)
+(defconstant +ssd1306-set-high-column+       #X10)
+(defconstant +ssd1306-set-start-line+        #X40)
+(defconstant +ssd1306-memory-mode+           #X20)
+(defconstant +ssd1306-column-addr+           #X21)
+(defconstant +ssd1306-page-addr+             #X22)
+(defconstant +ssd1306-com-scan-inc+          #XC0)
+(defconstant +ssd1306-com-scan-dec+          #XC8)
+(defconstant +ssd1306-seg-remap+             #XA0)
+(defconstant +ssd1306-charge-pump+           #X8D)
+(defconstant +ssd1306-external-vcc+          #X01)
+(defconstant +ssd1306-switch-cap-vcc+        #X02)
 
-(defconstant +ssd1306-disp-on+           #XAF)
-(defconstant +ssd1306-disp-off+          #XAE)
-(defconstant +ssd1306-set-disp-clk-div+  #XD5)
-(defconstant +ssd1306-set-multiplex+     #XA8)
-(defconstant +ssd1306-set-disp-offset+   #XD3)
-(defconstant +ssd1306-set-start-line+    #X40)
-(defconstant +ssd1306-seg-re-map+        #XA1)
-(defconstant +ssd1306-com-scan-inc+      #XC0)
-(defconstant +ssd1306-com-scan-dec+      #XC8)
-(defconstant +ssd1306-set-com-pins+      #XDA)
-(defconstant +ssd1306-set-contrast+      #X81)
-(defconstant +ssd1306-disp-allon-resume+ #XA4)
-(defconstant +ssd1306-normal-disp+       #XA6)
-(defconstant +ssd1306-charge-pump+       #X8D)
-(defconstant +ssd1306-deactivate-scroll+ #X2E)
-(defconstant +ssd1306-set-mem-addr-mode+ #X20)
-(defconstant +ssd1306-set-column-addr+   #X21)
-(defconstant +ssd1306-set-page-addr+     #X22)
+;; Scrolling constants
+(defconstant +ssd1306-activate-scroll+                      #X2F)
+(defconstant +ssd1306-deactivate-scroll+                    #X2E)
+(defconstant +ssd1306-set-vertical-scroll-area+             #XA3)
+(defconstant +ssd1306-right-horizontal-scroll+              #X26)
+(defconstant +ssd1306-left-horizontal-scroll+               #X27)
+(defconstant +ssd1306-vertical-and-right-horizontal-scroll+ #X29)
+(defconstant +ssd1306-vertical-and-left-horizontal-scroll+  #X2A)
 
-(defparameter *ssd1306-lcd-width*         128)
-(defparameter *ssd1306-lcd-height*        64)
+;; Parameters
+(defparameter *width*  128)
+(defparameter *height* 64)
+(defparameter *pages*  (/ *height* 8))
+(defparameter *buffer* (make-array `(,(* *width* *pages*))
+                                   :initial-element 0))
+
+;; File Descriptor
+(defparameter *fd* (wiringpi-i2c-setup +ssd1306-i2c-address+))
 
 ;;; I2C Bus data format
 ;; +----+-----+-+-+-+-+-+-+
 ;; | Co | D/C |0|0|0|0|0|0|
 ;; +----+-----+-+-+-+-+-+-+
 ;; Co bit = 0 (continue), D/C# = 0 (command)
-(defconstant +ssd1306-command+ #X00)
+(defconstant +command+ #X00)
 ;; Co bit = 0 (continue), D/C# = 1 (data)
-(defconstant +ssd1306-data+    #X40)
+(defconstant +data+    #X40)
 ;; Co bit = 1 (One command only), D/C# = 0 (command)
-(defconstant +ssd1306-control+ #X80)
+(defconstant +control+ #X80)
 ;; Co bit = 1 (One command only), D/C# = 1 (data)
-(defconstant +ssd1306-onedata+ #XC0)
+(defconstant +onedata+ #XC0)
 
-(defun ssd1306-i2c-write (type value)
-  (unless *ssd1306-fd*
-    (error "Not initialized! Execute the ssd1306-init function"))
-  (wiringpi-i2c-write-reg8 *oled-fd* type value))
+(defun i2c-write (type value)
+  (wiringpi-i2c-write-reg8 *fd* type value))
 
-(defun ssd1306-command (value)
-  (ssd1306-i2c-write +ssd1306-command+ value))
+(defun command (value)
+  (i2c-write +command+ value))
 
-(defun ssd1306-data (value)
-  (ssd1306-i2c-write +ssd1306-data+ value))
+(defun data (value)
+  (i2c-write +data+ value))
 
-(defun ssd1306-control (value)
-  (ssd1306-i2c-write +ssd1306-control+ value))
+(defun control (value)
+  (i2c-write +control+ value))
 
-(defun ssd1306-onedata (value)
-  (ssd1306-i2c-write +ssd1306-onedata+ value))
+(defun onedata (value)
+  (i2c-write +onedata+ value))
 
-(defun ssd1306-init ()
-  (setf *ssd1306-fd* (wiringpi-i2c-setup +ssd1306-i2c-addr+))
-  ;; Display Off                         #XAE
-  (ssd1306-command +ssd1306-disp-off+)
-  ;; Set MUX Raio                        #XA8, #X3F(63)
-  (ssd1306-command +ssd1306-set-multiplex+)
-  (ssd1306-command (1- *ssd1306-lcd-height*))
-  ;; Set Display Offset                  #XD3, #X00
-  (ssd1306-command +ssd1306-set-disp-offset+)
-  (ssd1306-command #X00)   ; no offset
-  ;; Set Display Start Line              #X40
-  (ssd1306-command +ssd1306-set-start-line+)
-  ;; Set Segment re-map                  #XA0/#XA1
-  (ssd1306-command +ssd1306-seg-re-map+)
-  ;; Set COM Output Scan Direction       #XC0/#XC8
-  (ssd1306-command +ssd1306-com-scan-dec+)
-  ;; Set COM Pins hardware configuration #XDA, #X02
-  (ssd1306-command +ssd1306-set-com-pins+)
-  (ssd1306-command #X12)
-  ;; Set Contrast Control                #X81, #X7F
-  (ssd1306-command +ssd1306-set-contrast+)
-  (ssd1306-command #X7F)
-  ;; Disable Entire Display On           #XA4
-  (ssd1306-command +ssd1306-disp-allon-resume+)
-  ;; Set Normal Display                  #XA6
-  (ssd1306-command +ssd1306-normal-disp+)
-  ;; Set Osc Frequency                   #XD5, #X80
-  (ssd1306-command +ssd1306-set-disp-clk-div+)
-  (ssd1306-command #X80)   ; the suggested ratio 0x80
-  ;; Deactivate scroll                   #X2E
-  (ssd1306-command +ssd1306-deactivate-scroll+)
-  ;; Set Memory Addressing Mode          #X20, #X10
-  (ssd1306-command +ssd1306-set-mem-addr-mode+)
-  (ssd1306-command #X10)   ; Page addressing Mode
-  ;; Set Column Address                  #X21
-  (ssd1306-command +ssd1306-set-column-addr+)
-  (ssd1306-command 0)      ; Column Start Address
-  (ssd1306-command 127)    ; Column Stop Address
-  ;; Set Page Address                    #X22
-  (ssd1306-command +ssd1306-set-page-addr+)
-  (ssd1306-command 0)      ; Vertical start position
-  (ssd1306-command 7)      ; Vertical end position
-  ;; Enable change pump regulator        #X8D, #X14
-  (ssd1306-command +ssd1306-charge-pump+)
-  (ssd1306-command #X14)
-  ;; Display On                          #XAF
-  (ssd1306-command +ssd1306-disp-on+))
+(defun byte-to-hex (data)
+  (let ((str ""))
+    (dolist (n (coerce data 'list))
+      (setf str (concatenate 'string str (write-to-string n))))
+    (format nil "~X" (parse-integer str :radix 2))))
 
-(defun ssd1306-clear ()
-  (dotimes (i 8)
-    (ssd1306-control (logior #XB0 i))   ; set page start address
-    (dotimes (j 16)
-      (dotimes (k 8)
-        (ssd1306-data #X00)))))
+(defun write-list (func data)
+  (let ((msb (byte-to-hex (subseq data 0 8)))
+        (lsb (byte-to-hex (subseq data 8 16))))
+    (funcall func (parse-integer (concatenate 'string msb lsb) :radix 16))))
 
-(defun ssd1306-point (x y)
-  (ssd1306-command (+ #X00 (logand (+ x 2) #X0F)))
-  (ssd1306-command (+ #X10 (ash (+ x 2) -4)))
-  (ssd1306-command (+ #XB0 (ash y -3)))
-  (ssd1306-command #XE0)
-  (ssd1306-onedata (ash 1 (logand y #X07)))
-  (ssd1306-command #XEE))
+(defun ssd1306-init (&optional (vcc-state +ssd1306-switch-cap-vcc+))
+  (command +ssd1306-display-off+)
+  (command +ssd1306-set-display-clock-div+)
+  (command #X80) ; the suggested ratio
+  (command +ssd1306-set-multi-plex+)
+  (command #X3F)
+  (command +ssd1306-set-display-offset+)
+  (command #X00) ; no offset
+  (command (logior +ssd1306-set-start-line+ #X00))
+  (command +ssd1306-charge-pump+)
+  (if (= vcc-state +ssd1306-external-vcc+)
+      (command #X10)
+      (command #X14))
+  (command +ssd1306-memory-mode+)
+  (command #X00)
+  (command (logior +ssd1306-seg-remap+ #X01))
+  (command +ssd1306-com-scan-dec+)
+  (command +ssd1306-set-com-pins+)
+  (command #X12)
+  (command +ssd1306-set-contrast+)
+  (if (= vcc-state +ssd1306-external-vcc+)
+      (command #X9F)
+      (command #XCF))
+  (command +ssd1306-set-pre-charge+)
+  (if (= vcc-state +ssd1306-external-vcc+)
+      (command #X22)
+      (command #XF1))
+  (command +ssd1306-set-vcom-detect+)
+  (command #X40)
+  (command +ssd1306-display-all-on-resume+)
+  (command +ssd1306-normal-display+)
+  (command +ssd1306-display-on+))
+
+(defun ssd1306-display ()
+  (command +ssd1306-column-addr+)
+  (command 0)             ; Column start address (0 = reset)
+  (command (- *width* 1)) ; Column end address
+  (command +ssd1306-page-addr+)
+  (command 0)             ; Page start address (0 = reset)
+  (command (- pages 1))   ; Page end address
+  (do ((i 0 (+ i 16)))
+      ((= i (length *buffer*)))
+    (write-list #'data (subseq *buffer* i (+ i 16)))))
