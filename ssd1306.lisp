@@ -46,6 +46,7 @@
 (defparameter *pages*  (/ *height* 8))
 (defparameter *buffer* (make-array `(,(* *width* *pages*))
                                    :initial-element 0))
+(defparameter *vcc-state* 0)
 
 ;; File Descriptor
 (defparameter *fd* (wiringpi-i2c-setup +ssd1306-i2c-address+))
@@ -78,18 +79,12 @@
 (defun onedata (value)
   (i2c-write +onedata+ value))
 
-(defun byte-to-hex (data)
-  (let ((str ""))
-    (dolist (n (coerce data 'list))
-      (setf str (concatenate 'string str (write-to-string n))))
-    (format nil "~X" (parse-integer str :radix 2))))
-
 (defun write-list (func data)
-  (let ((msb (byte-to-hex (subseq data 0 8)))
-        (lsb (byte-to-hex (subseq data 8 16))))
-    (funcall func (parse-integer (concatenate 'string msb lsb) :radix 16))))
+  (dotimes (n (length data))
+    (funcall func (aref data n))))
 
 (defun ssd1306-init (&optional (vcc-state +ssd1306-switch-cap-vcc+))
+  (setf *vcc-state* vcc-state)
   (command +ssd1306-display-off+)
   (command +ssd1306-set-display-clock-div+)
   (command #X80) ; the suggested ratio
@@ -122,13 +117,29 @@
   (command +ssd1306-normal-display+)
   (command +ssd1306-display-on+))
 
+(defun ssd1306-clear ()
+  (fill *buffer* 0))
+
+(defun ssd1306-set-contrast (contrast)
+  (when (or (< contrast 0) (> contrast 255))
+    (error "Contrast must be a value from 0 to 255"))
+  (command +ssd1306-set-contrast+)
+  (command contrast))
+
+(defun ssd1306-dim (dim)
+  (let ((contrast 0))
+    (when (/= dim 0)
+      (if (= *vcc-state* +ssd1306-external-vcc+)
+          (setf contrast #X9F)
+          (setf contrast #XCF)))))
+
 (defun ssd1306-display ()
   (command +ssd1306-column-addr+)
   (command 0)             ; Column start address (0 = reset)
   (command (- *width* 1)) ; Column end address
   (command +ssd1306-page-addr+)
   (command 0)             ; Page start address (0 = reset)
-  (command (- pages 1))   ; Page end address
+  (command (- *pages* 1)) ; Page end address
   (do ((i 0 (+ i 16)))
       ((= i (length *buffer*)))
     (write-list #'data (subseq *buffer* i (+ i 16)))))
