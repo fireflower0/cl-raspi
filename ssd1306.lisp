@@ -1,6 +1,10 @@
 (defpackage :cl-raspi/ssd1306
   (:use :cl
-        :cl-raspi/lib-wiring-pi))
+        :cl-raspi/lib-wiring-pi)
+  (:export :ssd1306-init
+           :ssd1306-clear
+           :ssd1306-display
+           :ssd1306-draw-pixel))
 (in-package :cl-raspi/ssd1306)
 
 ;; Constants
@@ -126,13 +130,6 @@
   (command +ssd1306-set-contrast+)
   (command contrast))
 
-(defun ssd1306-dim (dim)
-  (let ((contrast 0))
-    (when (/= dim 0)
-      (if (= *vcc-state* +ssd1306-external-vcc+)
-          (setf contrast #X9F)
-          (setf contrast #XCF)))))
-
 (defun ssd1306-display ()
   (command +ssd1306-column-addr+)
   (command 0)             ; Column start address (0 = reset)
@@ -143,3 +140,12 @@
   (do ((i 0 (+ i 16)))
       ((= i (length *buffer*)))
     (write-list #'data (subseq *buffer* i (+ i 16)))))
+
+(defun ssd1306-draw-pixel (x y)
+  (when (or (< x 0) (> x 127))
+    (error "x must be a value from 0 to 127"))
+  (when (or (< y 0) (> y 64))
+    (error "y must be a value from 0 to 63"))
+  (let ((index (+ x (* (floor y *pages*) *width*)))
+        (value (ash 1 (rem y 8))))
+    (setf (aref *buffer* index) (logior (aref *buffer* index) value))))
