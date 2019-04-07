@@ -1,10 +1,16 @@
 (defpackage :cl-raspi/ssd1306
   (:use :cl
         :cl-raspi/lib-wiring-pi)
-  (:export :ssd1306-init
+  (:export :+black+
+           :+white+
+           :+inverse+
+           :ssd1306-init
            :ssd1306-clear
            :ssd1306-display
-           :ssd1306-draw-pixel))
+           :ssd1306-draw-pixel
+           :ssd1306-draw-line
+           :ssd1306-draw-rect
+           :ssd1306-draw-fill-rect))
 (in-package :cl-raspi/ssd1306)
 
 ;; Constants
@@ -43,6 +49,11 @@
 (defconstant +ssd1306-left-horizontal-scroll+               #X27)
 (defconstant +ssd1306-vertical-and-right-horizontal-scroll+ #X29)
 (defconstant +ssd1306-vertical-and-left-horizontal-scroll+  #X2A)
+
+;; Color
+(defconstant +black+   0)
+(defconstant +white+   1)
+(defconstant +inverse+ 2)
 
 ;; Parameters
 (defparameter *width*  128)
@@ -141,11 +152,73 @@
       ((= i (length *buffer*)))
     (write-list #'data (subseq *buffer* i (+ i 16)))))
 
-(defun ssd1306-draw-pixel (x y)
+(defun ssd1306-clear-display ()
+  (ssd1306-clear)
+  (ssd1306-display))
+
+(defun ssd1306-draw-pixel (x y &key (color +white+))
   (when (or (< x 0) (> x 127))
     (error "x must be a value from 0 to 127"))
   (when (or (< y 0) (> y 64))
     (error "y must be a value from 0 to 63"))
   (let ((index (+ x (* (floor y *pages*) *width*)))
         (value (ash 1 (rem y 8))))
-    (setf (aref *buffer* index) (logior (aref *buffer* index) value))))
+    (setf (aref *buffer* index)
+          (cond ((= color +white+)
+                 (logior (aref *buffer* index) value))
+                ((= color +black+)
+                 (logand (aref *buffer* index) (lognot value)))
+                ((= color +inverse+)
+                 (logxor (aref *buffer* index) value))))))
+
+(defmacro while (test &body body)
+  `(do ()
+       ((not ,test))
+     ,@body))
+
+(defun ssd1306-draw-line (sx sy dx dy &key (color +white+))
+  (let* ((x sx) (y sy)
+         (wx (abs (- dx sx)))
+         (wy (abs (- dy sy)))
+         (diff 0))
+    (while (or (/= x dx) (/= y dy))
+      (ssd1306-draw-pixel x y :color color)
+      (if (>= wx wy)
+          (progn
+            (if (< sx dx)
+                (unless (>= x 127)
+                  (incf x))
+                (unless (<= x 0)
+                  (decf x)))
+            (incf diff (ash (- dy sy) 1))
+            (if (> diff wx)
+                (unless (>= y 63)
+                  (incf y)
+                  (decf diff (ash wx 1)))
+                (unless (<= y 0)
+                  (decf y)
+                  (incf diff (ash wx 1)))))
+          (progn
+            (if (< sy dy)
+                (unless (>= y 63)
+                  (incf y))
+                (unless (<= y 0)
+                  (decf y)))
+            (incf diff (ash (- dx sx) 1))
+            (if (> diff wy)
+                (unless (>= x 127)
+                  (incf x)
+                  (decf diff (ash wy 1)))
+                (unless (<= x 0)
+                  (decf x)
+                  (incf diff (ash wy 1)))))))))
+
+(defun ssd1306-draw-rect (x y w h &key (color +white+))
+  (ssd1306-draw-line x y (+ x w) y :color color)
+  (ssd1306-draw-line (+ x w) y (+ x w) (+ y h) :color color)
+  (ssd1306-draw-line (+ x w) (+ y h) x (+ y h) :color color)
+  (ssd1306-draw-line x (+ y h) x y) :color color)
+
+(defun ssd1306-draw-fill-rect (x y w h &key (color +white+))
+  (dotimes (n h)
+    (ssd1306-draw-line x (+ y n) (+ x w) (+ y n) :color color)))
