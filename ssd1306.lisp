@@ -11,7 +11,9 @@
            :ssd1306-draw-pixel
            :ssd1306-draw-line
            :ssd1306-draw-rect
-           :ssd1306-draw-fill-rect))
+           :ssd1306-draw-fill-rect
+           :ssd1306-draw-circle
+           :ssd1306-draw-fill-circle))
 (in-package :cl-raspi/ssd1306)
 
 ;; Constants
@@ -223,3 +225,25 @@
 (defun ssd1306-draw-fill-rect (x y w h &key (color +white+))
   (dotimes (n h)
     (ssd1306-draw-line x (+ y n) (+ x w) (+ y n) :color color)))
+
+(defun ssd1306-draw-circle (cx cy r &key (color +white+))
+  (let ((x r) (y 0)
+        (f (+ (* -2 r) 3)))
+    (while (>= x y)
+      (ssd1306-draw-pixel (+ cx x) (+ cy y) :color color)
+      (ssd1306-draw-pixel (- cx x) (+ cy y) :color color)
+      (ssd1306-draw-pixel (+ cx x) (- cy y) :color color)
+      (ssd1306-draw-pixel (- cx x) (- cy y) :color color)
+      (ssd1306-draw-pixel (+ cx y) (+ cy x) :color color)
+      (ssd1306-draw-pixel (- cx y) (+ cy x) :color color)
+      (ssd1306-draw-pixel (+ cx y) (- cy x) :color color)
+      (ssd1306-draw-pixel (- cx y) (- cy x) :color color)
+      (when (>= f 0)
+        (decf x)
+        (decf f (* 4 x)))
+      (incf y)
+      (incf f (+ (* 4 y) 2)))))
+
+(defun ssd1306-draw-fill-circle (cx cy r &key (color +white+))
+  (dotimes (n r)
+    (ssd1306-draw-circle cx cy n :color color)))
