@@ -7,6 +7,7 @@
            :ssd1306-init
            :ssd1306-clear
            :ssd1306-display
+           :ssd1306-clear-display
            :ssd1306-draw-pixel
            :ssd1306-draw-line
            :ssd1306-draw-rect
