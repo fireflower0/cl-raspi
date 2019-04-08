@@ -247,3 +247,8 @@
 (defun ssd1306-draw-fill-circle (cx cy r &key (color +white+))
   (dotimes (n r)
     (ssd1306-draw-circle cx cy n :color color)))
+
+(defun ssd1306-draw-triangle (x0 y0 x1 y1 x2 y2 &key (color +white+))
+  (ssd1306-draw-line x0 y0 x1 y1 :color color)
+  (ssd1306-draw-line x1 y1 x2 y2 :color color)
+  (ssd1306-draw-line x2 y2 x0 y0 :color color))
