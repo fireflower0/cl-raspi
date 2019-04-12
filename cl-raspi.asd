@@ -17,4 +17,5 @@
                  "cl-raspi/examples/buzzer"
                  "cl-raspi/examples/7seg"
                  "cl-raspi/examples/color"
-                 "cl-raspi/examples/simple-temperature"))
+                 "cl-raspi/examples/simple-temperature"
+                 "cl-raspi/examples/ssd1306-draw-shape"))
