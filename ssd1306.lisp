@@ -16,7 +16,7 @@
            :ssd1306-draw-fill-circle
            :ssd1306-draw-triangle
            :ssd1306-draw-fill-triangle
-           :invert-display))
+           :ssd1306-invert-display))
 (in-package :cl-raspi/ssd1306)
 
 ;; Constants
@@ -288,5 +288,5 @@
     (ssd1306-draw-line (- x1 n) (- y1 n) (+ x2 n) (- y2 n) :color color)
     (ssd1306-draw-line x0 (+ y0 n) (+ x2 n) (- y2 n) :color color)))
 
-(defun invert-display (flg)
+(defun ssd1306-invert-display (flg)
   (command (if flg +ssd1306-invert-display+ +ssd1306-normal-display+)))
