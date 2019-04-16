@@ -1,6 +1,7 @@
 (defpackage :cl-raspi/ssd1306
   (:use :cl
-        :cl-raspi/lib-wiring-pi)
+        :cl-raspi/lib-wiring-pi
+        :cl-raspi/8x8-font)
   (:export :+black+
            :+white+
            :+inverse+
