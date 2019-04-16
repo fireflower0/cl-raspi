@@ -3,7 +3,7 @@
   (:export :font-8x8))
 (in-package :cl-raspi/8x8-font)
 
-(defconstant font-8x8
+(defparameter font-8x8
   (make-array
    '(95 8)
    :initial-contents
