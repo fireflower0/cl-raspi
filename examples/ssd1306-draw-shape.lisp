@@ -53,6 +53,12 @@
   (delay 1000)
   (ssd1306-clear-display))
 
+(defun example-draw-string ()
+  (ssd1306-draw-string 10 32 "Hello, world!")
+  (ssd1306-display)
+  (delay 1000)
+  (ssd1306-clear-display))
+
 (defun main ()
   (ssd1306-init)
   (example-draw-pixel)
@@ -60,4 +66,5 @@
   (example-draw-rect)
   (example-draw-triangle)
   (example-draw-circle)
-  (example-invert-display))
+  (example-invert-display)
+  (example-draw-string))

@@ -16,6 +16,8 @@
            :ssd1306-draw-fill-circle
            :ssd1306-draw-triangle
            :ssd1306-draw-fill-triangle
+           :ssd1306-draw-char
+           :ssd1306-draw-string
            :ssd1306-invert-display))
 (in-package :cl-raspi/ssd1306)
 
@@ -290,3 +292,19 @@
 
 (defun ssd1306-invert-display (flg)
   (command (if flg +ssd1306-invert-display+ +ssd1306-normal-display+)))
+
+(defun ssd1306-draw-char (x y char)
+  (let ((index (- (char-code char) #X20)))
+    (dotimes (count1 8)
+      (do ((count2 7 (1- count2))
+           (count3 0 (1+ count3)))
+          ((< count2 0))
+        (if (zerop (ldb (byte 1 count3) (aref font-8x8 index count1)))
+            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color +black+)
+            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color +white+))))))
+
+(defun ssd1306-draw-string (x y str)
+  (let ((len (length str)))
+    (loop for char across str
+       for i from 0 to len
+       do (ssd1306-draw-char (+ (* i 8) x) y char))))
