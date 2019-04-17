@@ -54,6 +54,7 @@
   (ssd1306-clear-display))
 
 (defun example-draw-string ()
+  (ssd1306-draw-string 10 16 "Hello, world!" :fill t)
   (ssd1306-draw-string 10 32 "Hello, world!")
   (ssd1306-display)
   (delay 1000)

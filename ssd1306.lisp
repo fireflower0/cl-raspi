@@ -294,18 +294,21 @@
 (defun ssd1306-invert-display (flg)
   (command (if flg +ssd1306-invert-display+ +ssd1306-normal-display+)))
 
-(defun ssd1306-draw-char (x y char)
-  (let ((index (- (char-code char) #X20)))
+(defun ssd1306-draw-char (x y char &key (fill nil))
+  (let ((index (- (char-code char) #X20))
+        (color (if fill
+                   `(,+white+ ,+black+)
+                   `(,+black+ ,+white+))))
     (dotimes (count1 8)
       (do ((count2 7 (1- count2))
            (count3 0 (1+ count3)))
           ((< count2 0))
         (if (zerop (ldb (byte 1 count3) (aref font-8x8 index count1)))
-            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color +black+)
-            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color +white+))))))
+            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color (first color))
+            (ssd1306-draw-pixel (+ count2 x) (+ count1 y) :color (second color)))))))
 
-(defun ssd1306-draw-string (x y str)
+(defun ssd1306-draw-string (x y str &key (fill nil))
   (let ((len (length str)))
     (loop for char across str
        for i from 0 to len
-       do (ssd1306-draw-char (+ (* i 8) x) y char))))
+       do (ssd1306-draw-char (+ (* i 8) x) y char :fill fill))))
