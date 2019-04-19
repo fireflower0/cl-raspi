@@ -19,6 +19,7 @@
            :ssd1306-draw-fill-triangle
            :ssd1306-draw-char
            :ssd1306-draw-string
+           :ssd1306-draw-bmp
            :ssd1306-invert-display))
 (in-package :cl-raspi/ssd1306)
 
@@ -354,6 +355,7 @@
           (ssd1306-draw-pixel x y :color +black+))
       (if (> x 0)
           (decf x)
-          (progn (setf x (- width 1))
-                 (incf y)))
+          (progn
+            (setf x (1- width))
+            (incf y)))
       (incf count 3))))
