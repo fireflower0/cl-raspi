@@ -49,8 +49,8 @@
         (ssd1306-invert-display t)
         (ssd1306-invert-display nil))
     (ssd1306-display)
-    (delay 1000))
-  (delay 1000)
+    (delay 300))
+  (delay 300)
   (ssd1306-clear-display))
 
 (defun example-draw-string ()
@@ -58,6 +58,15 @@
   (ssd1306-draw-string 10 32 "Hello, world!")
   (ssd1306-display)
   (delay 1000)
+  (ssd1306-clear-display))
+
+(defun example-draw-bmp ()
+  (ssd1306-draw-bmp #P"~/.roswell/local-projects/fireflower0/cl-raspi/examples/cl-raspi-url.bmp")
+  (ssd1306-draw-string 62  8 "cl-raspi")
+  (ssd1306-draw-string 62 16 "Github")
+  (ssd1306-draw-string 62 24 "URL")
+  (ssd1306-display)
+  (delay 5000)
   (ssd1306-clear-display))
 
 (defun main ()
@@ -68,4 +77,5 @@
   (example-draw-triangle)
   (example-draw-circle)
   (example-invert-display)
-  (example-draw-string))
+  (example-draw-string)
+  (example-draw-bmp))
