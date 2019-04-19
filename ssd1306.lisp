@@ -312,3 +312,48 @@
     (loop for char across str
        for i from 0 to len
        do (ssd1306-draw-char (+ (* i 8) x) y char :fill fill))))
+
+(defun open-bmp-file (file-path)
+  (with-open-file (s file-path :direction :input :element-type '(unsigned-byte 8))
+    (let ((buf (make-array (file-length s) :element-type '(unsigned-byte 8))))
+      (read-sequence buf s)
+      buf)))
+
+(defun get-bmp-file-info (bmp-file pos size)
+  (let ((bmp-info (reverse (subseq bmp-file pos (+ pos size)))))
+    bmp-info))
+
+(defun get-bmp-info-value (bmp-file offset bytes)
+  (let ((buf-arr (get-bmp-file-info bmp-file offset bytes))
+        base-str
+        bmp-info-value)
+    (dotimes (count bytes)
+      (setf base-str (concatenate 'string base-str
+                                  (format nil "~2,'0x" (aref buf-arr count)))))
+    (setf bmp-info-value (parse-integer base-str :radix 16))))
+
+(defun create-color (bmp-file base)
+  (let* ((red      (ash (aref bmp-file base) -3))
+         (green    (ash (aref bmp-file (+ base 1)) -2))
+         (blue     (ash (aref bmp-file (+ base 2)) -3))
+         (rgb-bit1 (logior (ash red 3) (ash green -3)))
+         (rgb-bit2 (logior (ash green -5) blue)))
+    (list rgb-bit1 rgb-bit2)))
+
+(defun ssd1306-draw-bmp (file-path)
+  (let* ((bmp-file (open-bmp-file file-path))
+         (size     (get-bmp-info-value bmp-file 2  4))
+         (base     (get-bmp-info-value bmp-file 10 4))
+         (width    (get-bmp-info-value bmp-file 18 4))
+         (height   (get-bmp-info-value bmp-file 22 4))
+         (image    (get-bmp-file-info bmp-file base (- size base)))
+         (x (- width 1)) (y 0) (count 0))
+    (dotimes (n (* width height))
+      (if (equal (create-color image count) '(#XFF #X1F))
+          (ssd1306-draw-pixel x y :color +white+)
+          (ssd1306-draw-pixel x y :color +black+))
+      (if (> x 0)
+          (decf x)
+          (progn (setf x (- width 1))
+                 (incf y)))
+      (incf count 3))))
